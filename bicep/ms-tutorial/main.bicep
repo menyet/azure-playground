@@ -1,6 +1,8 @@
+param location string = resourceGroup().location
+
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: 'menyettutstore'
-  location: 'westus3'
+  location: location
   sku: {
     name: 'Standard_LRS'
   }
@@ -12,7 +14,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2023-01-01' = {
   name: 'menyet-tut-appservice-plan'
-  location: 'westus3'
+  location: location
   sku: {
     name: 'F1'
   }
@@ -20,7 +22,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2023-01-01' = {
 
 resource appServiceApp 'Microsoft.Web/sites@2023-01-01' = {
   name: 'menyet-tut-appservice-app'
-  location: 'westus3'
+  location: location
   properties: {
     serverFarmId: appServicePlan.id
     httpsOnly: true
