@@ -7,9 +7,10 @@ param location string = 'westus3' // resourceGroup().location
 param environmentType string
 
 var storageAccountSkuName = (environmentType == 'prod') ? 'Standard_GRS' : 'Standard_LRS'
-var appServicePlanSkuName = (environmentType == 'prod') ? 'P2V3' : 'F1'
 
 param storageAccountName string = 'toylaunch${uniqueString(resourceGroup().id)}'
+
+param appServiceAppName string = 'toylaunch${uniqueString(resourceGroup().id)}'
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: storageAccountName
@@ -23,19 +24,13 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   }
 }
 
-resource appServicePlan 'Microsoft.Web/serverfarms@2023-01-01' = {
-  name: 'menyet-tut-appservice-plan'
-  location: location
-  sku: {
-    name: appServicePlanSkuName
+module appService 'modules/appService.bicep' = {
+  name: 'appService'
+  params: {
+    location: location
+    appServiceAppName: appServiceAppName
+    environmentType: environmentType
   }
 }
 
-resource appServiceApp 'Microsoft.Web/sites@2023-01-01' = {
-  name: 'menyet-tut-appservice-app'
-  location: location
-  properties: {
-    serverFarmId: appServicePlan.id
-    httpsOnly: true
-  }
-}
+output appServiceAppHostName string = appService.outputs.appServiceAppHostName
